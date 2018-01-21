@@ -74,7 +74,7 @@ void Dijkstra(const int source, const int num=MAX)
 
 	// push all nodes into heap
     for (int i = 0; i < num; ++i) {
-        handle[i] = heap.emplace(Node(i, d[i]));
+        handle[i] = heap.emplace(i, d[i]);
     }
     vector<bool> in_heap(MAX, true);
 

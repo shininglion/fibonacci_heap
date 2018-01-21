@@ -24,9 +24,10 @@ size_t pheap<T, GetKey, Compare>::size() const
 
 
 template <typename T, typename GetKey, typename Compare>
-auto pheap<T, GetKey, Compare>::emplace(const value_type& data) -> handle_type
+template <typename ... Args>
+auto pheap<T, GetKey, Compare>::emplace(Args&& ... args) -> handle_type
 {
-    handle_type new_handle(new node_type(data));
+    handle_type new_handle(new node_type(value_type(args...)));
     this->insert(new_handle);
 
     return new_handle;

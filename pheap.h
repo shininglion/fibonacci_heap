@@ -58,7 +58,9 @@ public:
 	void clear();
 	void insert(handle_type);
     // return the newly created handle containing given data
-    handle_type emplace(const value_type& data);
+    // args... are arguments for constrcting an object of type value_type
+    template <typename ... Args>
+    handle_type emplace(Args&& ... args);
     handle_type extract();
 	void decreaseKey(handle_type, key_type);
     size_t size() const;
