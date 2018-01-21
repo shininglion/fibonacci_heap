@@ -6,25 +6,25 @@
 using namespace std;
 
 
-template <typename T, typename GetKey>
-pheap<T, GetKey>::pheap(GetKey key) : getkey(key), root(nullptr), heap_size(0) {}
+template <typename T, typename GetKey, typename Compare>
+pheap<T, GetKey, Compare>::pheap(GetKey key, Compare cmp) : getkey(key), compare(cmp), root(nullptr), heap_size(0) {}
 
 
-template <typename T, typename GetKey>
-void pheap<T, GetKey>::clear()
+template <typename T, typename GetKey, typename Compare>
+void pheap<T, GetKey, Compare>::clear()
 {
 	root = nullptr;
 	heap_size = 0;
 }
 
 
-template <typename T, typename GetKey>
-size_t pheap<T, GetKey>::size() const
+template <typename T, typename GetKey, typename Compare>
+size_t pheap<T, GetKey, Compare>::size() const
 { return this->heap_size; }
 
 
-template <typename T, typename GetKey>
-auto pheap<T, GetKey>::emplace(const value_type& data) -> handle_type
+template <typename T, typename GetKey, typename Compare>
+auto pheap<T, GetKey, Compare>::emplace(const value_type& data) -> handle_type
 {
     handle_type new_handle(new node_type(data));
     this->insert(new_handle);
@@ -33,8 +33,8 @@ auto pheap<T, GetKey>::emplace(const value_type& data) -> handle_type
 }
 
 
-template <typename T, typename GetKey>
-void pheap<T, GetKey>::insert(handle_type el)
+template <typename T, typename GetKey, typename Compare>
+void pheap<T, GetKey, Compare>::insert(handle_type el)
 {
 	heap_size++;
 	el->lchild = el->left = el->right = nullptr;
@@ -47,8 +47,8 @@ void pheap<T, GetKey>::insert(handle_type el)
 }
 
 
-template <typename T, typename GetKey>
-auto pheap<T, GetKey>::extract() -> handle_type
+template <typename T, typename GetKey, typename Compare>
+auto pheap<T, GetKey, Compare>::extract() -> handle_type
 {
 	if(heap_size == 0) {
 		printf("ERROR %s %d\n", __FILE__, __LINE__);
@@ -70,10 +70,10 @@ auto pheap<T, GetKey>::extract() -> handle_type
 }
 
 
-template <typename T, typename GetKey>
-void pheap<T, GetKey>::decreaseKey(handle_type el, key_type newValue)
+template <typename T, typename GetKey, typename Compare>
+void pheap<T, GetKey, Compare>::decreaseKey(handle_type el, key_type newValue)
 {
-	if(newValue > getkey(el->data)) {
+    if (compare(getkey(el->data), newValue)) {
 		printf("ERROR %s %d\n", __FILE__, __LINE__);
 		exit(1);
 	}
@@ -96,10 +96,10 @@ void pheap<T, GetKey>::decreaseKey(handle_type el, key_type newValue)
 }
 
 
-template <typename T, typename GetKey>
-auto pheap<T, GetKey>::cmpAndlink(handle_type e1, handle_type e2) -> handle_type
+template <typename T, typename GetKey, typename Compare>
+auto pheap<T, GetKey, Compare>::cmpAndlink(handle_type e1, handle_type e2) -> handle_type
 {
-	if(getkey(e1->data) < getkey(e2->data))	{
+	if(compare(getkey(e1->data), getkey(e2->data))) {
 		e2->left = e1;
 		e2->right = e1->lchild;
 		if(e2->right != nullptr) {
@@ -121,8 +121,8 @@ auto pheap<T, GetKey>::cmpAndlink(handle_type e1, handle_type e2) -> handle_type
 }
 
 
-template <typename T, typename GetKey>
-auto pheap<T, GetKey>::combineSiblings(handle_type left) -> handle_type
+template <typename T, typename GetKey, typename Compare>
+auto pheap<T, GetKey, Compare>::combineSiblings(handle_type left) -> handle_type
 {
     std::vector<handle_type> tmp(heap_size);
 	size_t num = 0;

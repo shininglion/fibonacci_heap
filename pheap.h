@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <memory>
+#include <functional>
 #include <type_traits>
 
 
@@ -35,8 +36,16 @@ struct pheap_el {
  * GetKey:
  * Unary function that accepts an element with type reference to T as argument
  * and returns a non-const reference of a variable with type Key.
+ *
+ * Compare:
+ * A binary predicate that takes two arguments and returns a bool.
+ * The expression comp(a,b), where comp is an object of this type and a and b are elements in the container,
+ * shall return true if a is considered to go before b in the strict weak ordering the function defines.
+ * The pheap uses this function to maintain the elements sorted in a way that preserves heap properties.
+ * Ex: If a = 1, b = 2, and comp(a, b) returns true, pheap will behave like a min heap.
+ * Note: the given two arguments are the associated keys (of type key_type defined in pheap) extracted from pheap elements (of type T)
  */
-template < typename T, typename GetKey=ReturnSelf<T> >
+template < typename T, typename GetKey=ReturnSelf<T>, typename Compare=std::less<typename std::remove_reference<typename std::result_of<GetKey(T&)>::type>::type> >
 class pheap
 {
 public:
@@ -45,7 +54,7 @@ public:
     typedef pheap_handle<T> handle_type;
     typedef typename std::remove_reference<typename std::result_of<GetKey(T&)>::type>::type key_type;
 
-    pheap(GetKey key = GetKey());
+    pheap(GetKey key = GetKey(), Compare cmp = Compare());
 	void clear();
 	void insert(handle_type);
     // return the newly created handle containing given data
@@ -56,6 +65,7 @@ public:
 
 private:
     GetKey getkey;
+    Compare compare;
 	handle_type root;
 	size_t heap_size;
 
